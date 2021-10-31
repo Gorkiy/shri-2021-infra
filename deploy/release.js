@@ -1,8 +1,14 @@
+const path = require('path');
 const axios = require('axios');
+const dotEnv = require('dotenv');
 const { TRACKER_API, TRACKER_ID, GITHUB_API, REPOSITORY_URL } = require('./config.js');
-const OAUTH = 'AQAAAAAAqu8IAAd44L0wFjF6Z00rm_33Yz7oltM';
 
-const createReleaseTicket = async (id, summary, description) => {
+dotEnv.config({
+    path:
+        path.resolve(__dirname, '../.env')
+});
+
+const createTicket = async (id, summary, description) => {
     console.log([...arguments]);
     await axios({
         url: `${TRACKER_API}/v2/issues`,
@@ -15,14 +21,14 @@ const createReleaseTicket = async (id, summary, description) => {
             unique: id
         },
         headers: {
-            Authorization: `OAuth ${OAUTH}`,
+            Authorization: `OAuth ${process.env.TRACKER_OAUTH}`,
             'X-Org-Id': TRACKER_ID
         }
     })
-    .catch(e => console.log(e));
+        .catch(e => console.log(e));
 }
 
-const updateReleaseTicket = async (ticketId, summary, description) => {
+const updateTicket = async (ticketId, summary, description) => {
     await axios({
         url: `${TRACKER_API}/v2/issues/${ticketId}`,
         method: 'PATCH',
@@ -33,11 +39,11 @@ const updateReleaseTicket = async (ticketId, summary, description) => {
             type: 'task'
         },
         headers: {
-            Authorization: `OAuth ${OAUTH}`,
+            Authorization: `OAuth ${process.env.TRACKER_OAUTH}`,
             'X-Org-Id': TRACKER_ID
         }
     })
-    .catch(e => console.log(e));
+        .catch(e => console.log(e));
 }
 
 const findTicket = async id => {
@@ -52,13 +58,13 @@ const findTicket = async id => {
             },
         },
         headers: {
-            Authorization: `OAuth ${OAUTH}`,
+            Authorization: `OAuth ${process.env.TRACKER_OAUTH}`,
             'X-Org-Id': TRACKER_ID
         }
     }).then(res => {
         result = res.data;
     })
-    .catch(e => console.log(e));
+        .catch(e => console.log(e));
 
     return result;
 }
@@ -75,7 +81,7 @@ const getTagMeta = async url => {
         })
         .catch(e => console.log(e));
 
-        return result;
+    return result;
 }
 
 const getTags = async () => {
@@ -120,11 +126,14 @@ const getTagsDiff = async (prevTag, lastTag) => {
 }
 
 const generateId = (prefix, tag) => `${prefix}/${tag}`;
+const getDate = (timestamp) => timestamp.split('T')[0];
 
-const createReleaseNotes = (tagMeta, version, diff) => {
-    var result = `Version: ${version}\nDate: ${tagMeta.date}\nAuthor: ${tagMeta.name}\n\nRELEASE NOTES:\n`;
+const createChangeLog = (tagMeta, version, diff) => {
+    const date = getDate(tagMeta.date);
+
+    var result = `Version: ${version}\nDate: ${date}\nAuthor: ${tagMeta.name}\n\Changelog:\n`;
     for (let commit of diff) {
-        result += `[${commit.author.date}] ${commit.message}\n`;
+        result += `${getDate(commit.author.date)}: ${commit.message}\n`;
     }
     return result;
 }
@@ -142,9 +151,9 @@ const createRelease = async () => {
     const tickets = await findTicket(ticketId);
 
     if (tickets.length) {
-        updateReleaseTicket(tickets[0].id, `Release artifact ${lastTag.ver}`, createReleaseNotes(meta, lastTag.ver, diff));
+        updateTicket(tickets[0].id, `Release artifact ${lastTag.ver}`, createChangeLog(meta, lastTag.ver, diff));
     } else {
-        createReleaseTicket(ticketId, `Release artifact ${lastTag.ver}`, createReleaseNotes(meta, lastTag.ver, diff));
+        createTicket(ticketId, `Release artifact ${lastTag.ver}`, createChangeLog(meta, lastTag.ver, diff));
     }
 }
 
