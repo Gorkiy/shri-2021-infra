@@ -8,4 +8,4 @@ branches:
     - master
 script:
   - node ./deploy/release.js
-  - bash ./deploy/runtests.sh
+  - bash ./deploy/autotests.sh
