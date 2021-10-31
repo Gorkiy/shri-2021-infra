@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { TRACKER_API, TRACKER_ID, GITHUB_API, REPOSITORY_URL } = require('./config.js');
+const OAUTH = 'AQAAAAAAqu8IAAd44L0wFjF6Z00rm_33Yz7oltM';
 
 const createReleaseTicket = async () => {
     await axios({
@@ -12,11 +13,34 @@ const createReleaseTicket = async () => {
             type: 'task'
         },
         headers: {
-            Authorization: `OAuth AQAAAAAAqu8IAAd44L0wFjF6Z00rm_33Yz7oltM`,
-            OrgId: TRACKER_ID
+            Authorization: `OAuth ${OAUTH}`,
+            'X-Org-Id': TRACKER_ID
         }
     }).then(res => console.log(res))
         .catch(e => console.log(e));
+}
+
+const findTicket = async () => {
+    await axios({
+        url: `${TRACKER_API}/v2/issues/_search`,
+        method: 'POST',
+        data: {
+            filter: {
+                queue: 'TMP',
+                summary: 'Test task'
+            },
+        },
+        headers: {
+            Authorization: `OAuth ${OAUTH}`,
+            'X-Org-Id': TRACKER_ID
+        }
+    }).then(res => {
+        console.log(res);
+        res.data.forEach(item => console.log('item.createdBy: ', item.createdBy));
+
+    })
+        .catch(e => console.log(e))
+        ;
 }
 
 const getTags = async () => {
@@ -34,7 +58,7 @@ const getTags = async () => {
     return tags.map(tag => {
         return {
             ref: tag.ref,
-            id: tag.ref.split('/')[2],
+            ver: tag.ref.split('/')[2],
             url: tag.url,
         }
     }).sort();
@@ -67,7 +91,7 @@ const createRelease = async () => {
     const prevTag = tags.length < 2 ? lastTag : tags[tags.length - 2];
     const diff = await getTagsDiff(prevTag.ref, lastTag.ref);
 
-    console.log('diff: ', diff);
+    findTicket();
 }
 
 createRelease();
