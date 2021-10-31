@@ -1,5 +1,3 @@
-// jest.mock('axios');
-// import axios from 'axios';
 import { ExampleApi, CartApi } from '../../src/client/api';
 import { initStore, ApplicationState } from '../../src/client/store';
 

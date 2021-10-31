@@ -11,7 +11,6 @@ module.exports = {
     retry: 1,
     plugins: {
         'html-reporter/hermione': {
-            // path: 'hermione-html-report'
             enabled: true
         }
     }
