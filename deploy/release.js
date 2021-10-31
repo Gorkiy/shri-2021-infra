@@ -4,8 +4,7 @@ const dotEnv = require('dotenv');
 const { TRACKER_API, TRACKER_ID, GITHUB_API, REPOSITORY_URL } = require('./config.js');
 
 dotEnv.config({
-    path:
-        path.resolve(__dirname, '../.env')
+    path: path.resolve(__dirname, '../.env')
 });
 
 const createTicket = async (id, summary, description) => {
@@ -131,7 +130,7 @@ const getDate = (timestamp) => timestamp.split('T')[0];
 const createChangeLog = (tagMeta, version, diff) => {
     const date = getDate(tagMeta.date);
 
-    var result = `Version: ${version}\nDate: ${date}\nAuthor: ${tagMeta.name}\n\Changelog:\n`;
+    var result = `Version: ${version}\nDate: ${date}\nAuthor: ${tagMeta.name}\n\nChangelog:\n`;
     for (let commit of diff) {
         result += `${getDate(commit.author.date)}: ${commit.message}\n`;
     }
