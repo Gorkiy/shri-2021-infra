@@ -16,6 +16,7 @@ import { ApplicationState } from './store';
 const bem = cn('Application');
 
 // Комментарий для коммита 1
+// Комментарий для коммита 2
 
 export const Application: FC = () => {
     const [collapsed, setCollapsed] = useState(true);
