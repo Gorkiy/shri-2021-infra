@@ -1,11 +1,6 @@
-const path = require('path');
 const axios = require('axios');
-const dotEnv = require('dotenv');
 const { TRACKER_API, TRACKER_ID, GITHUB_API, REPOSITORY_URL } = require('./config.js');
-
-dotEnv.config({
-    path: path.resolve(__dirname, '../.env')
-});
+const TRACKER_OAUTH = process.env['trackerOauth'];
 
 const createTicket = async (id, summary, description) => {
     console.log([...arguments]);
@@ -20,7 +15,7 @@ const createTicket = async (id, summary, description) => {
             unique: id
         },
         headers: {
-            Authorization: `OAuth ${process.env.TRACKER_OAUTH}`,
+            Authorization: `OAuth ${TRACKER_OAUTH}`,
             'X-Org-Id': TRACKER_ID
         }
     })
@@ -38,7 +33,7 @@ const updateTicket = async (ticketId, summary, description) => {
             type: 'task'
         },
         headers: {
-            Authorization: `OAuth ${process.env.TRACKER_OAUTH}`,
+            Authorization: `OAuth ${TRACKER_OAUTH}`,
             'X-Org-Id': TRACKER_ID
         }
     })
@@ -57,7 +52,7 @@ const findTicket = async id => {
             },
         },
         headers: {
-            Authorization: `OAuth ${process.env.TRACKER_OAUTH}`,
+            Authorization: `OAuth ${TRACKER_OAUTH}`,
             'X-Org-Id': TRACKER_ID
         }
     }).then(res => {
