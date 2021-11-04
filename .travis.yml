@@ -9,3 +9,4 @@ branches:
 script:
   - node ./deploy/release.js
   - bash ./deploy/autotests.sh
+  - bash ./deploy/docker.sh
