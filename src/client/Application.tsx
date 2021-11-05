@@ -19,6 +19,7 @@ const bem = cn('Application');
 // Комментарий для коммита 2
 // Попробую оставить еще 1 коммит
 // Комментарий 1 для проверки
+// Комментарий 2 для проверки
 
 export const Application: FC = () => {
     const [collapsed, setCollapsed] = useState(true);
